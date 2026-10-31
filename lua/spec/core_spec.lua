@@ -18,12 +18,14 @@ describe("LibVelvet core", function()
   end)
 
   it("lets a newer copy replace the functions", function()
+    local old = UI.Button
     local lib = LibStub:NewLibrary("LibVelvet-1.0", 2)
     assert.equal(UI, lib)
     lib.loading = true
     dofile("LibVelvet-1.0/Button.lua")
-    assert.is_function(UI.Button)
     lib.loading = nil
+    assert.is_function(UI.Button)
+    assert.are_not.equal(old, UI.Button)
   end)
 
   it("ships the spec's token values", function()

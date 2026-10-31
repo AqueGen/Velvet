@@ -37,6 +37,16 @@ describe("UI.Slider", function()
     assert.same({}, changes)
   end)
 
+  it("does not report the range clamp when Setup runs after onChange is set", function()
+    slider:Setup(3, 60, 1)
+    assert.same({}, changes)
+    assert.equal(3, slider:GetValue())
+  end)
+
+  it("takes the mouse so it can be dragged", function()
+    assert.is_true(slider.widget.mouse)
+  end)
+
   it("reports a value set without silent once", function()
     slider:Setup(3, 60, 1)
     slider:SetValue(7)

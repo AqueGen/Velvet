@@ -82,7 +82,13 @@ function Region:SetHighlightTexture(t) self.highlightTexture = t end
 function Region:GetHighlightTexture() return self.highlightTexture end
 function Region:SetNormalTexture(t) self.normalTexture = t end
 
-function Region:SetMinMaxValues(lo, hi) self.min, self.max = lo, hi end
+-- Like the client: a new range clamps the current value and reports the change.
+function Region:SetMinMaxValues(lo, hi)
+  self.min, self.max = lo, hi
+  local v = self.value or 0
+  local clamped = math.max(lo, math.min(hi, v))
+  if clamped ~= v then self:SetValue(clamped) end
+end
 function Region:GetMinMaxValues() return self.min, self.max end
 function Region:SetValueStep(step) self.step = step end
 function Region:SetObeyStepOnDrag(on) self.obey = on end
