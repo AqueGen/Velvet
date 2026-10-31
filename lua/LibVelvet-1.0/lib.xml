@@ -6,5 +6,6 @@
   <Script file="Group.lua"/>
   <Script file="Nav.lua"/>
   <Script file="Segments.lua"/>
+  <Script file="Slider.lua"/>
   <Script file="End.lua"/>
 </Ui>
