@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - uses: leafo/gh-actions-lua@32909a2dea0a48c433aec79e7fcd31b4cd55800f # v13.1.0
         with:
           luaVersion: '5.1'
