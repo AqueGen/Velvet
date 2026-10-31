@@ -40,6 +40,10 @@ function Region:SetAlpha(a) self.alpha = a end
 function Region:SetScale(s) self.scale = s end
 function Region:GetScale() return self.scale or 1 end
 function Region:SetClipsChildren(on) self.clips = on end
+function Region:SetAutoFocus(on) self.autoFocus = on end
+function Region:ClearFocus() self.focusCleared = true end
+function Region:SetTextInsets(...) self.insets = { ... } end
+function Region:SetFontObject(font) self.fontObject = font end
 function Region:GetAlpha() return self.alpha end
 function Region:SetScript(name, fn) self.scripts[name] = fn end
 function Region:GetScript(name) return self.scripts[name] end
