@@ -1,0 +1,42 @@
+-- Copyright (c) 2026 AqueGen. All rights reserved. See LICENSE.
+local helper = require("spec.helper")
+
+describe("UI.NavEntry and UI.PaintNav", function()
+  local UI, entry
+  before_each(function()
+    UI = helper.load()
+    entry = UI.NavEntry(UIParent, "Panels", 150, 20)
+  end)
+
+  it("has no edge, a label and a hidden 2px left bar", function()
+    assert.equal(150, entry:GetWidth())
+    assert.equal(20, entry:GetHeight())
+    assert.is_nil(entry.backdropBorder)
+    assert.equal("Panels", entry.label:GetText())
+    assert.equal(2, entry.bar:GetWidth())
+    assert.is_true(helper.near(UI.T.underline, entry.bar.color))
+  end)
+
+  it("selected: fill, warm label, bar shown", function()
+    UI.PaintNav(entry, "selected")
+    assert.is_true(entry.fill:IsShown())
+    assert.is_true(helper.near(UI.T.navSelected, entry.fill.color))
+    assert.is_true(helper.near(UI.T.selLabel, entry.label.textColor))
+    assert.is_true(entry.bar:IsShown())
+  end)
+
+  it("normal: no fill, text label, no bar", function()
+    UI.PaintNav(entry, "selected")
+    UI.PaintNav(entry, "normal")
+    assert.is_false(entry.fill:IsShown())
+    assert.is_true(helper.near(UI.T.text, entry.label.textColor))
+    assert.is_false(entry.bar:IsShown())
+  end)
+
+  it("muted: no fill, muted label, no bar", function()
+    UI.PaintNav(entry, "muted")
+    assert.is_false(entry.fill:IsShown())
+    assert.is_true(helper.near(UI.T.muted, entry.label.textColor))
+    assert.is_false(entry.bar:IsShown())
+  end)
+end)

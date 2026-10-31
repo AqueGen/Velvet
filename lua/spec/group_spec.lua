@@ -1,0 +1,30 @@
+-- Copyright (c) 2026 AqueGen. All rights reserved. See LICENSE.
+local helper = require("spec.helper")
+
+describe("UI.PaintGroup", function()
+  local UI
+  before_each(function() UI = helper.load() end)
+
+  it("paints the box and the title and adds a 1px fading rule under the title", function()
+    local box = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    local title = box:CreateFontString(nil, "OVERLAY")
+    local rule = UI.PaintGroup(box, title)
+    assert.equal(UI.FLAT, box:GetBackdrop())
+    assert.is_true(helper.near(UI.T.panel, box.backdropColor))
+    assert.is_true(helper.near(UI.T.border, box.backdropBorder))
+    assert.is_true(helper.near(UI.T.title, title.textColor))
+    assert.equal(1, rule:GetHeight())
+    local point, rel = rule:GetPoint(1)
+    assert.equal("TOPLEFT", point)
+    assert.equal(title, rel)
+    assert.equal("HORIZONTAL", rule.gradient[1])
+    assert.is_true(rule.gradient[2].a > 0)
+    assert.equal(0, rule.gradient[3].a)
+  end)
+
+  it("paints a box without a title", function()
+    local box = CreateFrame("Frame", nil, UIParent, "BackdropTemplate")
+    assert.is_nil(UI.PaintGroup(box))
+    assert.is_true(helper.near(UI.T.border, box.backdropBorder))
+  end)
+end)
