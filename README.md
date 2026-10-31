@@ -22,7 +22,8 @@ Several addons can embed it; LibStub keeps the newest copy, so an addon with an 
 - `UI.Slider(parent, width)` - `slider:Setup(min, max, step)`, `slider:SetValue(value, silent)` (clamps and snaps), `slider:GetValue()`, `slider:SetEnabled(on)`, `slider.onChange = function(value) end`.
 - `UI.Checkbox(parent, size)` - a CheckButton with the native API; it repaints from `PostClick`, so callers keep `OnClick` and leave `PostClick` alone.
 - `UI.Input(parent, width, height)` - a flat EditBox (well fill, control edge, gold edge while focused); Enter and Escape drop focus; `SetEnabled(false)` dims it.
-- `UI.PreviewLayout(contentW, columnMin, zoneMin, zoneMax)` - `{ mode = "side" | "band", columnW, zoneW }`: the preview zone sits beside the settings column when both fit, otherwise it becomes a band above the column.
+- `UI.PreviewLayout(contentW, columnMin, zoneMin, zoneMax, wanted)` - `{ mode = "side" | "band", columnW, zoneW }`: the preview zone sits beside the settings column when both fit, otherwise it becomes a band above the column. `wanted` (a width the player dragged) replaces the `zoneMax` cap, kept between `zoneMin` and what leaves the column its minimum.
+- `UI.Splitter(parent, onMove, onDone)` - an 8-wide drag handle with a 1px line that lights on hover; `onMove(dx)` gets the cursor distance from the press, `onDone()` fires on release.
 - `UI.FitScale(w, h, availW, availH)` - the scale that fits `w` x `h` into the space, never above 1.
 - `UI.PreviewPane(parent)` - a pane with `.caption`, a clipped `.stage` over a fake game-world strip, and `.offLine`; `pane:SetCaption(text)`, `pane:SetOff(text)` (nil turns it back on), `pane:Fit(content, w, h)`.
 

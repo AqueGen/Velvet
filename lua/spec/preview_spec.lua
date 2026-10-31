@@ -17,6 +17,12 @@ describe("UI.PreviewLayout", function()
     assert.same({ mode = "side", columnW = 520, zoneW = 260 }, UI.PreviewLayout(788, 520, 260, 380))
   end)
 
+  it("takes a wanted zone width, kept between the zone minimum and the column minimum", function()
+    assert.same({ mode = "side", columnW = 504, zoneW = 500 }, UI.PreviewLayout(1012, 500, 260, 380, 500))
+    assert.same({ mode = "side", columnW = 500, zoneW = 504 }, UI.PreviewLayout(1012, 500, 260, 380, 900))
+    assert.same({ mode = "side", columnW = 744, zoneW = 260 }, UI.PreviewLayout(1012, 500, 260, 380, 100))
+  end)
+
   it("falls back to a band above the column in a narrow window", function()
     assert.same({ mode = "band", columnW = 672, zoneW = 672 }, UI.PreviewLayout(672, 520, 260, 380))
   end)
