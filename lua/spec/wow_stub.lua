@@ -27,8 +27,13 @@ function Region:ClearAllPoints() self.points = {} end
 function Region:SetPoint(point, rel, relPoint, x, y)
   self.points = self.points or {}
   if type(rel) == "number" then rel, relPoint, x, y = nil, nil, rel, relPoint end
-  self.points[#self.points + 1] = { point, rel, relPoint, x or 0, y or 0 }
+  local at = #self.points + 1
+  for i, p in ipairs(self.points) do
+    if p[1] == point then at = i end
+  end
+  self.points[at] = { point, rel, relPoint, x or 0, y or 0 }
 end
+function Region:GetStringHeight() return self.stringHeight or 12 end
 function Region:SetAllPoints(rel) self.points = { { "ALL", rel or self.parent } } end
 function Region:GetPoint(i) return unpack(self.points[i or 1]) end
 function Region:SetAlpha(a) self.alpha = a end

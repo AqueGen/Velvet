@@ -25,6 +25,12 @@ function helper.find(frame, pred)
   end
 end
 
+function helper.point(region, name)
+  for _, p in ipairs(region.points) do
+    if p[1] == name then return unpack(p) end
+  end
+end
+
 function helper.near(a, b)
   if type(a) ~= "table" or type(b) ~= "table" then return false end
   for i = 1, math.max(#a, #b) do

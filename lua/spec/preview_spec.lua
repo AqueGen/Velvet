@@ -84,6 +84,16 @@ describe("UI.PreviewPane", function()
     assert.equal(pane.stage, rel)
   end)
 
+  it("keeps a two-line off text below the stage", function()
+    pane.offLine.stringHeight = 28
+    pane:SetOff("a long line that wraps")
+    local _, _, _, _, y = helper.point(pane.stage, "BOTTOMRIGHT")
+    assert.equal(UI.PAD + 28 + 2, y)
+    pane:SetOff(nil)
+    _, _, _, _, y = helper.point(pane.stage, "BOTTOMRIGHT")
+    assert.equal(UI.PAD + 14, y)
+  end)
+
   it("refits the content when the stage changes size", function()
     pane.stage:SetSize(200, 200)
     local content = CreateFrame("Frame", nil, pane.stage)
