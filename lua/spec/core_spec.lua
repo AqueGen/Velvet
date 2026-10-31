@@ -5,8 +5,8 @@ describe("LibVelvet core", function()
   local UI
   before_each(function() UI = helper.load() end)
 
-  it("registers LibVelvet-1.0 at MINOR 1", function()
-    assert.equal(1, UI.MINOR)
+  it("registers LibVelvet-1.0 at MINOR 3", function()
+    assert.equal(3, UI.MINOR)
     assert.equal(UI, LibStub("LibVelvet-1.0"))
   end)
 
@@ -19,7 +19,7 @@ describe("LibVelvet core", function()
 
   it("lets a newer copy replace the functions", function()
     local old = UI.Button
-    local lib = LibStub:NewLibrary("LibVelvet-1.0", 2)
+    local lib = LibStub:NewLibrary("LibVelvet-1.0", UI.MINOR + 1)
     assert.equal(UI, lib)
     lib.loading = true
     dofile("LibVelvet-1.0/Button.lua")

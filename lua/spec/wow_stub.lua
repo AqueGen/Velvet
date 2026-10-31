@@ -27,11 +27,23 @@ function Region:ClearAllPoints() self.points = {} end
 function Region:SetPoint(point, rel, relPoint, x, y)
   self.points = self.points or {}
   if type(rel) == "number" then rel, relPoint, x, y = nil, nil, rel, relPoint end
-  self.points[#self.points + 1] = { point, rel, relPoint, x or 0, y or 0 }
+  local at = #self.points + 1
+  for i, p in ipairs(self.points) do
+    if p[1] == point then at = i end
+  end
+  self.points[at] = { point, rel, relPoint, x or 0, y or 0 }
 end
+function Region:GetStringHeight() return self.stringHeight or 12 end
 function Region:SetAllPoints(rel) self.points = { { "ALL", rel or self.parent } } end
 function Region:GetPoint(i) return unpack(self.points[i or 1]) end
 function Region:SetAlpha(a) self.alpha = a end
+function Region:SetScale(s) self.scale = s end
+function Region:GetScale() return self.scale or 1 end
+function Region:SetClipsChildren(on) self.clips = on end
+function Region:SetAutoFocus(on) self.autoFocus = on end
+function Region:ClearFocus() self.focusCleared = true end
+function Region:SetTextInsets(...) self.insets = { ... } end
+function Region:SetFontObject(font) self.fontObject = font end
 function Region:GetAlpha() return self.alpha end
 function Region:SetScript(name, fn) self.scripts[name] = fn end
 function Region:GetScript(name) return self.scripts[name] end
