@@ -32,6 +32,9 @@ end
 function Region:SetAllPoints(rel) self.points = { { "ALL", rel or self.parent } } end
 function Region:GetPoint(i) return unpack(self.points[i or 1]) end
 function Region:SetAlpha(a) self.alpha = a end
+function Region:SetScale(s) self.scale = s end
+function Region:GetScale() return self.scale or 1 end
+function Region:SetClipsChildren(on) self.clips = on end
 function Region:GetAlpha() return self.alpha end
 function Region:SetScript(name, fn) self.scripts[name] = fn end
 function Region:GetScript(name) return self.scripts[name] end
