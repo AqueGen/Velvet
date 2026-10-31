@@ -102,6 +102,8 @@ function Region:Click(button)
   if self.kind == "CheckButton" then self.checked = not self.checked end
   local fn = self.scripts.OnClick
   if fn then fn(self, button or "LeftButton", true) end
+  fn = self.scripts.PostClick
+  if fn then fn(self, button or "LeftButton", true) end
 end
 
 local function child(self, kind, layer)
