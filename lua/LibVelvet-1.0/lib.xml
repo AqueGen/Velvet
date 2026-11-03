@@ -12,5 +12,6 @@
   <Script file="Input.lua"/>
   <Script file="Splitter.lua"/>
   <Script file="DockGeometry.lua"/>
+  <Script file="Dock.lua"/>
   <Script file="End.lua"/>
 </Ui>
