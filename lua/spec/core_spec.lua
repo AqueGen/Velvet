@@ -5,8 +5,8 @@ describe("LibVelvet core", function()
   local UI
   before_each(function() UI = helper.load() end)
 
-  it("registers LibVelvet-1.0 at MINOR 5", function()
-    assert.equal(5, UI.MINOR)
+  it("registers LibVelvet-1.0 at MINOR 6", function()
+    assert.equal(6, UI.MINOR)
     assert.equal(UI, LibStub("LibVelvet-1.0"))
   end)
 
