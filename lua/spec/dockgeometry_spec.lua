@@ -54,6 +54,25 @@ describe("UI.DockGeometry", function()
       assert.are.equal("far", id2)
     end)
 
+    it("pushes an overlapping rect out below, above, left or right with the gap and docks it", function()
+      assert.are.same({ 120, 156, "a", "Below", 20 }, snap({ x = 120, y = 140, w = 100, h = 40 }, { anchor }))
+      assert.are.same({ 120, 54, "a", "Above", 20 }, snap({ x = 120, y = 80, w = 100, h = 40 }, { anchor }))
+      assert.are.same({ 54, 100, "a", "Left", 0 }, snap({ x = 90, y = 105, w = 40, h = 40 }, { anchor }))
+      assert.are.same({ 306, 100, "a", "Right", 0 }, snap({ x = 280, y = 105, w = 40, h = 40 }, { anchor }))
+    end)
+
+    it("pushes out of the rect it overlaps most", function()
+      local small = { id = "small", x = 100, y = 300, w = 50, h = 20 }
+      local big = { id = "big", x = 160, y = 300, w = 200, h = 100 }
+      local _, _, id = D.Snap({ x = 140, y = 310, w = 80, h = 30 }, { small, big })
+      assert.are.equal("big", id)
+    end)
+
+    it("leaves an overlap alone when pushing is off, and never pushes out of a rect without an id", function()
+      assert.are.same({ 120, 140 }, { D.Snap({ x = 120, y = 140, w = 100, h = 40 }, { anchor }, nil, 5, false) })
+      assert.are.same({ 0, 0 }, { D.Snap({ x = 10, y = 12, w = 200, h = 50 }, { { x = 0, y = 0, w = 1000, h = 800 } }) })
+    end)
+
     it("keeps a custom gap and distance", function()
       local x, y = D.Snap({ x = 100, y = 170, w = 50, h = 20 }, { anchor }, 10, 30)
       assert.are.same({ 100, 160 }, { x, y })

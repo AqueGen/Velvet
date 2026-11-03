@@ -293,6 +293,22 @@ describe("UI.Dock", function()
     assert.equal("R", saved.P.dockTo)
   end)
 
+  it("docks a member dropped on top of the root to the nearest edge", function()
+    add("R", 100, 980, { root = true })
+    local p = add("P", 120, 960)
+    local x, y = Dock.Snap("P")
+    assert.same({ 120, 156 }, { x, y })
+    p.left, p.top = x, 1080 - y
+    Dock.Drop("P")
+    assert.same({ "R", "Below", 20 }, { saved.P.dockTo, saved.P.side, saved.P.offset })
+  end)
+
+  it("never pushes a root out of a panel it overlaps", function()
+    add("R", 120, 960, { root = true })
+    add("P", 100, 980)
+    assert.same({ 120, 120 }, { Dock.Snap("R") })
+  end)
+
   it("ignores its own followers when snapping a member", function()
     add("Q", 100, 1039)
     add("P", 100, 980)
