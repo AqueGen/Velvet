@@ -33,6 +33,12 @@ function Region:SetPoint(point, rel, relPoint, x, y)
   end
   self.points[at] = { point, rel, relPoint, x or 0, y or 0 }
 end
+function Region:IsMouseOver() return stub.over[self] == true end
+function Region:GetLeft() return self.left end
+function Region:GetTop() return self.top end
+function Region:GetEffectiveScale() return self.effScale or 1 end
+function Region:SetFrameStrata(s) self.strata = s end
+function Region:GetFrameStrata() return self.strata or "MEDIUM" end
 function Region:GetStringHeight() return self.stringHeight or 12 end
 function Region:SetAllPoints(rel) self.points = { { "ALL", rel or self.parent } } end
 function Region:GetPoint(i) return unpack(self.points[i or 1]) end
@@ -145,8 +151,11 @@ end
 function CreateColor(r, g, b, a) return { r = r, g = g, b = b, a = a } end
 
 UIParent = region("Frame")
+UIParent.left, UIParent.top = 0, 1080
+stub.combat, stub.over = false, {}
+function InCombatLockdown() return stub.combat end
 GameTooltip = region("GameTooltip")
 
-function stub.reset() stub.created = {} end
+function stub.reset() stub.created = {} stub.combat, stub.over = false, {} end
 
 return stub
