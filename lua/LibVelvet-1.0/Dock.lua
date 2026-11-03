@@ -55,7 +55,7 @@ local function gapOf(id)
 end
 
 function Dock.Register(id, spec)
-    panels[id] = { spec = spec }
+    if panels[id] then panels[id].spec = spec else panels[id] = { spec = spec } end
 end
 
 function Dock.Unregister(id)
@@ -67,13 +67,14 @@ end
 function Dock.Members(rootId)
     local out = {}
     for id in pairs(panels) do
-        if id ~= rootId then
+        if id ~= rootId and not panels[id].spec.root then
             local seen, cur = { [id] = true }, panels[id].spec.get().dockTo
             while cur and panels[cur] and not seen[cur] do
                 if cur == rootId then
                     out[#out + 1] = id
                     break
                 end
+                if panels[cur].spec.root then break end
                 seen[cur] = true
                 cur = panels[cur].spec.get().dockTo
             end
@@ -104,7 +105,7 @@ function Dock.Apply(id)
     while cur do
         if seen[cur] then return end
         seen[cur] = true
-        cur = panels[cur] and panels[cur].spec.get().dockTo
+        cur = panels[cur] and not panels[cur].spec.root and panels[cur].spec.get().dockTo
     end
     local frame, s = p.spec.frame, scaleOf(p.spec.frame)
     local point, relPoint, x, y = edge(gapOf(id) / s, (pos.offset or 0) / s)
@@ -135,7 +136,14 @@ end
 function Dock.Snap(id)
     local p = panels[id]
     local mine = rectOf(p.spec.frame)
-    local _, list = collect(movingSet(id))
+    local skip = movingSet(id)
+    for _, m in ipairs(Dock.Members(id)) do skip[m] = true end
+    local _, list = collect(skip)
+    if p.spec.root then
+        if #list == 0 then return mine.x, mine.y end
+        local x, y = D.Snap(mine, list, gapOf(id), D.SNAP)
+        return x, y
+    end
     local best
     for _, merged in ipairs({ false, true }) do
         local subset = {}
@@ -185,6 +193,10 @@ function Dock.Drop(id)
         local q = panels[pid]
         local pos = q.spec.get()
         local wasDocked = pos.dockTo ~= nil
+        local old = positions[pid]
+        if moving[pid] and not o.dockTo and old.dockTo and moving[old.dockTo] then
+            o.dockTo, o.side, o.offset = old.dockTo, old.side, old.offset
+        end
         pos.dockTo, pos.side, pos.offset = o.dockTo, o.side, o.offset and round(o.offset)
         q.spec.set(pos)
         if wasDocked and not o.dockTo and not q.spec.root then place(q.spec.frame, rects[pid].x, rects[pid].y) end
@@ -202,13 +214,13 @@ end
 
 function Dock.Undock(id)
     local p = panels[id]
-    if not p then return end
+    if not p or InCombatLockdown() then return end
     local f = p.spec.frame
     local r = rectOf(f)
     local pos = p.spec.get()
     pos.dockTo, pos.side, pos.offset = nil, nil, nil
     p.spec.set(pos)
-    if r and not p.spec.root and not InCombatLockdown() then place(f, r.x, r.y) end
+    if r and not p.spec.root then place(f, r.x, r.y) end
     if p.spec.onChange then p.spec.onChange() end
 end
 
@@ -243,18 +255,23 @@ function Dock.RefreshMerge(rootId)
             frame:SetBackdropBorderColor(unpack(lib.T.border))
             p.mergeFrame = frame
         end
-        local tl, br, low = shown[1], shown[1], 99
+        local left, top, right, bottom, low, level = shown[1], shown[1], shown[1], shown[1], 99, 99
         for _, s in ipairs(shown) do
-            if s.r.x + s.r.y < tl.r.x + tl.r.y then tl = s end
-            if s.r.x + s.r.w + s.r.y + s.r.h > br.r.x + br.r.w + br.r.y + br.r.h then br = s end
+            if s.r.x < left.r.x then left = s end
+            if s.r.y < top.r.y then top = s end
+            if s.r.x + s.r.w > right.r.x + right.r.w then right = s end
+            if s.r.y + s.r.h > bottom.r.y + bottom.r.h then bottom = s end
+            level = math.min(level, s.frame:GetFrameLevel())
             for i, name in ipairs(STRATA) do
                 if name == s.frame:GetFrameStrata() and i < low then low = i end
             end
         end
         frame:SetFrameStrata(STRATA[math.max(1, low - 1)])
+        frame:SetFrameLevel(math.max(0, level - 1))
         frame:ClearAllPoints()
-        frame:SetPoint("TOPLEFT", tl.frame, "TOPLEFT")
-        frame:SetPoint("BOTTOMRIGHT", br.frame, "BOTTOMRIGHT")
+        frame:SetPoint("TOPLEFT", left.frame, "TOPLEFT", 0, (left.r.y - top.r.y) / scaleOf(left.frame))
+        frame:SetPoint("BOTTOMRIGHT", right.frame, "BOTTOMRIGHT", 0,
+            (right.r.y + right.r.h - bottom.r.y - bottom.r.h) / scaleOf(right.frame))
         frame:Show()
     elseif p.mergeFrame then
         p.mergeFrame:Hide()
@@ -276,9 +293,9 @@ function Dock.Hovered(id)
     if not p then return false end
     for _, gid in ipairs(groupOf(top)) do
         local f = panels[gid].spec.frame
-        if f:IsShown() and MouseIsOver(f) then return true end
+        if f:IsShown() and f:IsMouseOver() then return true end
     end
-    return p.mergeFrame ~= nil and p.mergeFrame:IsShown() and MouseIsOver(p.mergeFrame)
+    return p.mergeFrame ~= nil and p.mergeFrame:IsShown() and p.mergeFrame:IsMouseOver()
 end
 
 function Dock.Arrow(parent, onClick, id)
@@ -297,7 +314,7 @@ function Dock.Arrow(parent, onClick, id)
         fs:SetText(collapsed and ">" or "v")
     end
     parent:HookScript("OnUpdate", function()
-        b:SetShown((id ~= nil and Dock.Hovered(id)) or MouseIsOver(parent) or MouseIsOver(b))
+        b:SetShown((id ~= nil and Dock.Hovered(id)) or parent:IsMouseOver() or b:IsMouseOver())
     end)
     return b
 end
