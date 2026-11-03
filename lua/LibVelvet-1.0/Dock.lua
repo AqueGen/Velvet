@@ -269,9 +269,9 @@ function Dock.RefreshMerge(rootId)
         frame:SetFrameStrata(STRATA[math.max(1, low - 1)])
         frame:SetFrameLevel(math.max(0, level - 1))
         frame:ClearAllPoints()
-        frame:SetPoint("TOPLEFT", left.frame, "TOPLEFT", 0, (left.r.y - top.r.y) / scaleOf(left.frame))
+        frame:SetPoint("TOPLEFT", left.frame, "TOPLEFT", 0, left.r.y - top.r.y)
         frame:SetPoint("BOTTOMRIGHT", right.frame, "BOTTOMRIGHT", 0,
-            (right.r.y + right.r.h - bottom.r.y - bottom.r.h) / scaleOf(right.frame))
+            right.r.y + right.r.h - bottom.r.y - bottom.r.h)
         frame:Show()
     elseif p.mergeFrame then
         p.mergeFrame:Hide()

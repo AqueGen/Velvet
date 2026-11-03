@@ -249,6 +249,16 @@ describe("UI.Dock", function()
     assert.equal(-100, by)
   end)
 
+  it("uses raw UIParent units for merged frame offsets when members are scaled", function()
+    add("R", 10, 1080, { root = true, w = 300, h = 60, merged = function() return true end })
+    local m = add("M", 0, 680, { w = 100, h = 100, pos = { dockTo = "R", side = "Below", offset = 0 } })
+    m.effScale = 1.5
+    Dock.RefreshMerge("R")
+    local _, trel, _, _, ty = helper.point(mergeFrame(), "TOPLEFT")
+    assert.equal(m, trel)
+    assert.equal(60, ty)
+  end)
+
   it("puts the merged frame below the members even on the lowest strata", function()
     local r = add("R", 100, 980, { root = true, merged = function() return true end })
     add("M", 200, 980, { pos = { dockTo = "R", side = "Right", offset = 0 } }):SetFrameLevel(6)
