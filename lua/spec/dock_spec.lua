@@ -259,6 +259,21 @@ describe("UI.Dock", function()
     assert.equal(60, ty)
   end)
 
+  it("returns the merged frame for any id of the group and nil when not merged", function()
+    local on = true
+    add("R", 100, 980, { root = true, merged = function() return on end })
+    add("M", 200, 980, { pos = { dockTo = "R", side = "Right", offset = 0 } })
+    add("X", 500, 500)
+    assert.is_nil(Dock.MergeFrame("R"))
+    Dock.RefreshMerge("R")
+    assert.equal(mergeFrame(), Dock.MergeFrame("R"))
+    assert.equal(mergeFrame(), Dock.MergeFrame("M"))
+    assert.is_nil(Dock.MergeFrame("X"))
+    on = false
+    Dock.RefreshMerge("R")
+    assert.is_nil(Dock.MergeFrame("M"))
+  end)
+
   it("puts the merged frame below the members even on the lowest strata", function()
     local r = add("R", 100, 980, { root = true, merged = function() return true end })
     add("M", 200, 980, { pos = { dockTo = "R", side = "Right", offset = 0 } }):SetFrameLevel(6)
