@@ -265,5 +265,17 @@ describe("UI.DockGeometry", function()
       local out = D.Drop(rs, { raid = true }, {}, 6, { raid = true })
       assert.is_nil(out.raid.dockTo)
     end)
+
+    it("never pulls a resting root onto a moving root", function()
+      local rs = { A = { x = 0, y = 0, w = 100, h = 20 }, B = { x = 106, y = 0, w = 50, h = 20 } }
+      local out = D.Drop(rs, { A = true }, {}, 6, { A = true, B = true })
+      assert.is_nil(out.B)
+    end)
+
+    it("ignores roots set to false", function()
+      local rs = { a = { x = 0, y = 0, w = 100, h = 20 }, b = { x = 106, y = 0, w = 50, h = 20 } }
+      local out = D.Drop(rs, { a = true }, {}, 6, { a = false })
+      assert.is_nil(out.b)
+    end)
   end)
 end)

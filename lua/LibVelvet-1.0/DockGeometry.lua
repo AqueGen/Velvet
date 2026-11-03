@@ -143,10 +143,10 @@ function G.Drop(rects, moving, positions, gap, roots)
         end
     end
     for _, rootId in ipairs(sortedKeys(roots)) do
-        local root = moving[rootId] and rects[rootId]
+        local root = roots[rootId] and moving[rootId] and rects[rootId]
         if root then
             for _, id in ipairs(ids) do
-                if not moving[id] then
+                if not moving[id] and not roots[id] then
                     local r, p = rects[id], posOf(id)
                     local held = p and p.dockTo and rects[p.dockTo] and G.SideOf(r, rects[p.dockTo], gap)
                     local side, offset = G.SideOf(r, root, gap)
